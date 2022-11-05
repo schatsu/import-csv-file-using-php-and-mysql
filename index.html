@@ -1,0 +1,121 @@
+
+<!doctype html>
+<html lang="tr">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+
+    <title>Mivento Assessment</title>
+
+    <style>
+      .container {
+        margin-top: 2rem !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-5">
+          <div class="alert alert-danger"></div>
+          <div class="alert alert-success"></div>
+          <form class="needs-validation" novalidate  method="post" id="import_csv_form" enctype="multipart/form-data">
+            <div class="mb-3">
+              <label for="campaign-name" class="form-label">Kampanya Adı</label>
+              <input type="text" class="form-control" name="kampanya_adi" id="campaign-name" required />
+            </div>
+            <div class="mb-3">
+              <select class="form-select" name="kampanya_tarihi" required>
+                <option selected disabled value="">Tarih Seçin</option>
+                <option value="2022-07">Temmuz 2022</option>
+                <option value="2022-08">Ağustos 2022</option>
+                <option value="2022-09">Eylül 2022</option>
+              </select>
+            </div>
+            <div class="mb-3">
+            <label for="campaign-file" class="form-label">Dosya Yükleyin</label>
+              <input class="form-control" type="file" name="import_csv" /></td>
+               
+            </div>
+            <div class="d-grid">
+            <input type="submit" name="import" id="import" class="btn btn-primary" value="Import">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js" integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk" crossorigin="anonymous"></script>
+
+    <!-- Example starter JavaScript for disabling form submissions if there are invalid fields -->
+    <script>
+      (function () {
+        'use strict';
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll('.needs-validation');
+
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms)
+          .forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+              if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+
+              form.classList.add('was-validated');
+            }, false);
+          });
+      })();
+    </script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  </body>
+</html>
+
+<script>
+  $(document).ready(function(){
+    $('#import_csv_form').on('submit', function(event){
+      event.preventDefault();
+      $.ajax({
+        url:"import.php",
+        method:"POST",
+        data:new FormData(this),
+        contentType:false,
+        cache:false,
+        processData:false,
+        beforeSend:function(){
+          $('#import').attr('disabled', 'disabled');
+          $('#import').val('Importing...');
+        },
+        success: function(data)
+        {
+          if(data.isSuccess){
+            $('#message').html(data);
+            $('#import_csv_form')[0].reset();
+            $('#import').attr('disabled', false);
+            $('#import').val('Import');
+            $(".alert-danger").text("");
+            $(".alert-success").text(data.message);
+          }
+          else{
+            $(".alert-danger").text(data.message);
+            $(".alert-success").text("");
+          }
+        },
+        error: function(err){
+          $(".alert-success").text("");
+          $(".alert-danger").text("Bir hata oluştu.");
+        }
+      })
+    });
+  });
+  
+  
+  </script>
